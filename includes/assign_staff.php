@@ -1,63 +1,49 @@
 <?php
-
-function assignTechnician($conn, $issue_type, $request_id, $available_time){
-
-    // determine specialization
-    if($issue_type == 1){
-        $specialization = "plumber";
+/**
+ * Tries to find a free staff of the required specialization.
+ * If found, assigns them, sets request to 'in_progress', and returns 'assigned'.
+ * If no free staff, returns 'unavailable'.
+ */
+function assignTechnician($conn, $issue_type, $request_id) {
+    // Map issue_type_id to specialization
+    switch ($issue_type) {
+        case 1:
+            $specialization = "plumber";
+            break;
+        case 2:
+            $specialization = "electrician";
+            break;
+        case 3:
+            $specialization = "carpenter";
+            break;
+        default:
+            return 'unavailable';
     }
-    elseif($issue_type == 2){
-        $specialization = "electrician";
-    }
-    else{
-        $specialization = "carpenter";
-    }
 
-    /* Find technician free at that time */
-
+    // Find one free staff of the required trade (free as set by supervisor)
     $sql = "SELECT staff.id
             FROM staff
-
-            WHERE staff.specialization='$specialization'
-            AND staff.status='free'
-
-            AND staff.id NOT IN (
-                SELECT assigned_staff
-                FROM requests
-                WHERE available_time='$available_time'
-                AND status='in_progress'
-            )
-
+            WHERE staff.specialization = '$specialization'
+              AND staff.status = 'free'
             LIMIT 1";
-
     $result = $conn->query($sql);
 
-    if($result->num_rows > 0){
-
+    if ($result && $result->num_rows > 0) {
         $staff = $result->fetch_assoc();
         $staff_id = $staff['id'];
 
-        // assign technician
-        $assign = "UPDATE requests
-                   SET assigned_staff='$staff_id',
-                       status='in_progress'
-                   WHERE id='$request_id'";
+        // Assign the request
+        $conn->query("UPDATE requests 
+                      SET assigned_staff = '$staff_id',
+                          status = 'in_progress'
+                      WHERE id = '$request_id'");
 
-        $conn->query($assign);
+        // Mark staff as occupied
+        $conn->query("UPDATE staff SET status = 'occupied' WHERE id = '$staff_id'");
 
-        // mark technician occupied
-        $update = "UPDATE staff
-                   SET status='occupied'
-                   WHERE id='$staff_id'";
-
-        $conn->query($update);
-
-        return true;
-
+        return 'assigned';
     }
 
-    return false;
-
+    return 'unavailable';
 }
-
 ?>

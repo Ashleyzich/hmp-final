@@ -112,8 +112,11 @@ if($row['status'] == "pending"){
 elseif($row['status'] == "in_progress"){
     echo "<span class='badge bg-primary'>In Progress</span>";
 }
-else{
+elseif($row['status'] == "completed"){
     echo "<span class='badge bg-success'>Completed</span>";
+}
+elseif($row['status'] == "conflict"){
+    echo "<span class='badge bg-danger'>Conflict</span>";
 }
 ?>
 </td>

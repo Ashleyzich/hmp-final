@@ -20,28 +20,30 @@ if(isset($_POST['add_staff'])){
     $specialization = $_POST['specialization'];
     $password = $_POST['password'];
 
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-    $sql1 = "INSERT INTO users (name,email,password,role)
-             VALUES ('$name','$email','$hashed_password','staff')";
-
-    if($conn->query($sql1)){
-
-        $user_id = $conn->insert_id;
-
-        $sql2 = "INSERT INTO staff (user_id,specialization,phone,status)
-                 VALUES ('$user_id','$specialization','$phone','free')";
-
-        if($conn->query($sql2)){
-            $message = "<div class='alert alert-success'>Technician registered successfully.</div>";
-        }
-
+    // Restrict to HIT emails
+    if (!str_ends_with($email, '@hit.ac.zw')) {
+        $message = "<div class='alert alert-danger'>Technician email must end with @hit.ac.zw</div>";
     } else {
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-        $message = "<div class='alert alert-danger'>".$conn->error."</div>";
+        $sql1 = "INSERT INTO users (name,email,password,role)
+                 VALUES ('$name','$email','$hashed_password','staff')";
 
+        if($conn->query($sql1)){
+
+            $user_id = $conn->insert_id;
+
+            $sql2 = "INSERT INTO staff (user_id,specialization,phone,status)
+                     VALUES ('$user_id','$specialization','$phone','free')";
+
+            if($conn->query($sql2)){
+                $message = "<div class='alert alert-success'>Technician registered successfully.</div>";
+            }
+
+        } else {
+            $message = "<div class='alert alert-danger'>".$conn->error."</div>";
+        }
     }
-
 }
 
 
@@ -104,7 +106,7 @@ Add and manage maintenance technicians.
 
 <div class="col-md-6">
 <label class="form-label">Email</label>
-<input type="email" name="email" class="form-control" required>
+<input type="email" name="email" class="form-control" required placeholder="technician@hit.ac.zw">
 </div>
 
 <div class="col-md-6">

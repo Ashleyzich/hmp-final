@@ -9,36 +9,42 @@ if(isset($_POST['login'])){
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $sql = "SELECT * FROM users WHERE email='$email'";
-    $result = $conn->query($sql);
+    // ✅ Only HIT emails are allowed to use the system
+    if (!str_ends_with($email, '@hit.ac.zw')) {
+        $message = "<div class='alert alert-danger'>Only @hit.ac.zw email addresses are permitted.</div>";
+    } else {
 
-    if($result->num_rows > 0){
+        $sql = "SELECT * FROM users WHERE email='$email'";
+        $result = $conn->query($sql);
 
-        $user = $result->fetch_assoc();
+        if($result->num_rows > 0){
 
-        if(password_verify($password,$user['password'])){
+            $user = $result->fetch_assoc();
 
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['role'] = $user['role'];
-            $_SESSION['name'] = $user['name'];
+            if(password_verify($password,$user['password'])){
 
-            if($user['role'] == "student"){
-                header("Location: ../student/dashboard.php");
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['role'] = $user['role'];
+                $_SESSION['name'] = $user['name'];
+
+                if($user['role'] == "student"){
+                    header("Location: ../student/dashboard.php");
+                }
+                elseif($user['role'] == "staff"){
+                    header("Location: ../staff/dashboard.php");
+                }
+                elseif($user['role'] == "supervisor"){
+                    header("Location: ../supervisor/dashboard.php");
+                }
+                exit();
+
+            } else {
+                $message = "<div class='alert alert-danger'>Incorrect password</div>";
             }
-            elseif($user['role'] == "staff"){
-                header("Location: ../staff/dashboard.php");
-            }
-            elseif($user['role'] == "supervisor"){
-                header("Location: ../supervisor/dashboard.php");
-            }
-            exit();
 
         } else {
-            $message = "<div class='alert alert-danger'>Incorrect password</div>";
+            $message = "<div class='alert alert-danger'>User not found</div>";
         }
-
-    } else {
-        $message = "<div class='alert alert-danger'>User not found</div>";
     }
 }
 ?>
@@ -138,7 +144,7 @@ style="background: linear-gradient(rgba(0,51,102,0.85), rgba(0,51,102,0.85)), ur
 
     <div class="divider">OR</div>
 
-    <!-- ✅ REAL GOOGLE BUTTON -->
+    <!-- GOOGLE BUTTON -->
     <div class="text-center">
         <div id="g_id_onload"
              data-client_id="381122014546-s7kag9e8efjic41fbe2n0c3ptpv008bq.apps.googleusercontent.com"

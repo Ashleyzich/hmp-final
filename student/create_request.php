@@ -7,7 +7,6 @@ if(!isset($_SESSION['role']) || $_SESSION['role'] != 'student'){
 }
 
 include("../config/database.php");
-include("../includes/assign_staff.php");
 
 $message = "";
 
@@ -29,13 +28,8 @@ if(isset($_POST['submit_request'])){
 
     $request_id = $conn->insert_id;
 
-   $assigned =  assignTechnician($conn, $issue_type, $request_id, $available_time);
-
-    if($assigned){
-        $message = "<div class='alert alert-success'>Request submitted and technician assigned.</div>";
-    } else {
-        $message = "<div class='alert alert-warning'>Request submitted but technician not available yet.</div>";
-    }
+   // NEW LOGIC: Do NOT assign immediately. Status remains 'pending'.
+$message = "<div class='alert alert-success'>Request submitted successfully. We will assign a technician at your preferred time.</div>";
 
 }
 ?>

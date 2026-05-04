@@ -21,5 +21,3 @@
 
 </head>
 
-<body><?php include("../system/auto_update_staff.php"); ?></body>
-<?php include("../system/auto_assign.php"); ?>

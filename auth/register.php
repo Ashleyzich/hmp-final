@@ -5,23 +5,27 @@ $message = "";
 
 if(isset($_POST['register'])){
 
-$name = $_POST['name'];
-$email = $_POST['email'];
-$password = $_POST['password'];
-$hostel = $_POST['hostel'];
-$room = $_POST['room'];
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $hostel = $_POST['hostel'];
+    $room = $_POST['room'];
 
-$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    // Restrict to HIT emails only
+    if (!str_ends_with($email, '@hit.ac.zw')) {
+        $message = "<div class='alert alert-danger'>Only @hit.ac.zw email addresses are allowed.</div>";
+    } else {
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-$sql = "INSERT INTO users (name,email,password,role,hostel,room)
-VALUES ('$name','$email','$hashed_password','student','$hostel','$room')";
+        $sql = "INSERT INTO users (name,email,password,role,hostel,room)
+                VALUES ('$name','$email','$hashed_password','student','$hostel','$room')";
 
-if($conn->query($sql)){
-$message = "<div class='alert alert-success'>Registration successful. You can now login.</div>";
-}else{
-$message = "<div class='alert alert-danger'>Error: ".$conn->error."</div>";
-}
-
+        if($conn->query($sql)){
+            $message = "<div class='alert alert-success'>Registration successful. You can now login.</div>";
+        } else {
+            $message = "<div class='alert alert-danger'>Error: ".$conn->error."</div>";
+        }
+    }
 }
 ?>
 
@@ -59,7 +63,7 @@ style="background: linear-gradient(rgba(0,51,102,0.9), rgba(0,51,102,0.9)), url(
 
 <div class="mb-3">
 <label>Email</label>
-<input type="email" name="email" class="form-control" required>
+<input type="email" name="email" class="form-control" required placeholder="student@hit.ac.zw">
 </div>
 
 <div class="mb-3">

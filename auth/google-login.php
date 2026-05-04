@@ -28,14 +28,11 @@ $name = $payload->name;
 $google_id = $payload->sub;
 $picture = $payload->picture;
 
-// OPTIONAL: Restrict to school emails
-// Uncomment if needed
-/*
+// Restrict to HIT emails
 if (!str_ends_with($email, "@hit.ac.zw")) {
-    echo json_encode(["status" => "error", "message" => "Only school emails allowed"]);
+    echo json_encode(["status" => "error", "message" => "Only @hit.ac.zw email addresses are allowed."]);
     exit();
 }
-*/
 
 // Check if user already exists
 $stmt = $conn->prepare("SELECT * FROM users WHERE email=?");
@@ -51,19 +48,18 @@ if ($result->num_rows > 0) {
 } else {
 
     // New user → assign default role
-    // AUTO ROLE DETECTION
-if ($email == "admin@hit.ac.zw") {
-    $role = "supervisor";
-} 
-elseif (str_contains($email, "staff")) {
-    $role = "staff";
-} 
-elseif (str_ends_with($email, "@hit.ac.zw")) {
-    $role = "student";
-} 
-else {
-    $role = "student";
-}
+    if ($email == "admin@hit.ac.zw") {
+        $role = "supervisor";
+    } 
+    elseif (str_contains($email, "staff")) {
+        $role = "staff";
+    } 
+    elseif (str_ends_with($email, "@hit.ac.zw")) {
+        $role = "student";
+    } 
+    else {
+        $role = "student";
+    }
 
     $stmt = $conn->prepare("INSERT INTO users (name,email,google_id,profile_pic,role) VALUES (?,?,?,?,?)");
     $stmt->bind_param("sssss", $name, $email, $google_id, $picture, $role);
