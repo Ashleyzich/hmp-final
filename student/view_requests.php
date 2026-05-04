@@ -8,6 +8,8 @@ if(!isset($_SESSION['role']) || $_SESSION['role'] != 'student'){
 
 include("../config/database.php");
 
+if ($conn->connect_error) die("DB error: " . $conn->connect_error);
+
 $student_id = $_SESSION['user_id'];
 
 $sql = "SELECT requests.*, issue_types.issue_name

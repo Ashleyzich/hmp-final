@@ -1,20 +1,20 @@
 <?php
 session_start();
 
-// -- Security: only students can rate
 if (!isset($_SESSION['role']) || $_SESSION['role'] != 'student') {
     header("Location: ../auth/login.php");
     exit();
 }
 
 include("../config/database.php");
+include_once("../includes/notifications.php");
 
 $request_id = $_GET['id'] ?? null;
 $student_id = $_SESSION['user_id'];
 
-// -- 1. Fetch request details and verify ownership
+// Fetch request details and verify ownership
 $request = $conn->query("
-    SELECT requests.*, issue_types.issue_name, staff.user_id AS staff_user_id
+    SELECT requests.*, issue_types.issue_name, staff.id AS staff_id, staff.user_id AS staff_user_id
     FROM requests
     JOIN issue_types ON requests.issue_type_id = issue_types.id
     LEFT JOIN staff ON requests.assigned_staff = staff.id
@@ -26,16 +26,16 @@ if (!$request) {
     exit();
 }
 
-// -- 2. Check if rating already exists
+// Check if rating already exists
 $already = $conn->query("SELECT id FROM ratings WHERE request_id = '$request_id'");
 if ($already->num_rows > 0) {
     header("Location: view_requests.php?msg=already_rated");
     exit();
 }
 
-$staff_id = $request['assigned_staff'];
+$staff_id = $request['staff_id'];
+$staff_user_id = $request['staff_user_id']; // user ID of the technician
 
-// -- 3. Process rating submission
 $message = "";
 if (isset($_POST['submit_rating'])) {
     $rating = (int) $_POST['rating'];
@@ -43,9 +43,15 @@ if (isset($_POST['submit_rating'])) {
     if ($rating < 1 || $rating > 10) {
         $message = "<div class='alert alert-danger'>Please select a rating between 1 and 10.</div>";
     } else {
-        // Insert rating (no feedback)
+        // Insert rating
         $conn->query("INSERT INTO ratings (request_id, staff_id, rating)
                       VALUES ('$request_id', '$staff_id', '$rating')");
+
+        // Notify the staff member
+        if ($staff_user_id) {
+            $staff_msg = "You received a rating of $rating/10 for request #$request_id.";
+            createNotification($conn, $staff_user_id, $staff_msg);
+        }
 
         header("Location: view_requests.php?msg=rated");
         exit();

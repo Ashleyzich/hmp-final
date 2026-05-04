@@ -1,3 +1,8 @@
+<?php
+// Run assignment logic for all pending requests (if any time has passed)
+include(__DIR__ . "/../system/assignment_checker.php");
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -44,27 +44,19 @@ $completed_tasks = $conn->query("SELECT COUNT(*) AS total
 
 <!-- Dashboard Header -->
 
-<div class="card shadow border-0 mb-4 text-white"
-style="background: linear-gradient(135deg, #003366, #00509E); border-radius:15px;">
-
-<div class="card-body d-flex justify-content-between align-items-center">
-
-<div>
-
-<h3 class="mb-1 fw-bold text-white">
-    <i class="bi bi-tools text-warning"></i> Maintenance Staff Dashboard
-</h3>
-
-<p class="mb-0 text-light">
-Welcome back, <strong><?php echo $_SESSION['name']; ?></strong> 🔧
-</p>
-
-</div>
-
-<i class="bi bi-wrench-adjustable display-5 text-warning"></i>
-
-</div>
-
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h3 class="mb-1 fw-bold text-white">
+                <i class="bi bi-tools text-warning"></i> Maintenance Staff Dashboard
+            </h3>
+            <p class="mb-0 text-white">
+                Welcome back, <strong class="text-warning"><?php echo $_SESSION['name']; ?></strong>
+            </p>
+        </div>
+        <i class="bi bi-wrench-adjustable display-5 text-warning"></i>
+    </div>
 </div>
 
 

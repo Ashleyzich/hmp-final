@@ -156,7 +156,7 @@ $detail_requests = $conn->query("
 <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
     <div class="card-body py-3">
         <div class="row align-items-center g-3">
-            <!-- Period filter (now includes 'All') -->
+            <!-- Period filter -->
             <div class="col-md-4">
                 <small class="text-muted fw-bold"><i class="bi bi-calendar3"></i> PERIOD</small>
                 <div class="btn-group w-100 mt-1" role="group">
@@ -202,6 +202,18 @@ $detail_requests = $conn->query("
             </div>
         </div>
     </div>
+</div>
+
+<!-- Export Buttons -->
+<div class="d-flex justify-content-end mb-4">
+    <a href="export_word.php?period=<?php echo urlencode($period); ?>&status=<?php echo urlencode($status); ?>&issue=<?php echo urlencode($issue); ?>" 
+       class="btn btn-outline-primary me-2">
+        <i class="bi bi-file-earmark-word"></i> Export Word
+    </a>
+    <a href="export_pdf.php?period=<?php echo urlencode($period); ?>&status=<?php echo urlencode($status); ?>&issue=<?php echo urlencode($issue); ?>" 
+       class="btn btn-outline-danger">
+        <i class="bi bi-file-earmark-pdf"></i> Export PDF
+    </a>
 </div>
 
 <!-- ===============================
